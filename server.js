@@ -17,25 +17,7 @@ const allowedOrigins = [
 ];
 
 app.use(cors({
-  origin: function (origin, callback) {
-    // allow requests with no origin (like Postman or curl)
-    if (!origin) return callback(null, true);
-
-    // Log the origin for debugging
-    console.log('Request origin:', origin);
-
-    // Check if origin matches any allowed origins
-    const isAllowed = allowedOrigins.some(allowedOrigin => {
-      return origin === allowedOrigin || origin.endsWith('.vercel.app');
-    });
-
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      console.log('CORS blocked origin:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: true, // Allow all origins for now
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
@@ -45,7 +27,16 @@ app.use(cors({
 // Also add this to respond to OPTIONS preflight requests
 app.options('*', cors());
 
-
+// Debug endpoint to check CORS and origins
+app.get('/api/debug', (req, res) => {
+  res.json({
+    origin: req.get('Origin'),
+    referer: req.get('Referer'),
+    userAgent: req.get('User-Agent'),
+    headers: req.headers,
+    timestamp: new Date().toISOString()
+  });
+});
 
 app.use('/api/openai', aiRoutes);
 
