@@ -8,15 +8,27 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-// Define the CORS options
-const corsOptions = {
-  origin: 'https://todo-blush-phi.vercel.app', // only allow this origin
-  credentials: true, // allow cookies and auth headers
-  methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
-  allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
-};
+const allowedOrigins = ['https://todo-blush-phi.vercel.app'];
 
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: function (origin, callback) {
+    // allow requests with no origin (like Postman or curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
+// Also add this to respond to OPTIONS preflight requests
+app.options('*', cors());
+
 
 
 app.use('/api/openai', aiRoutes);
