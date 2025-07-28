@@ -8,20 +8,14 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-const allowedOrigins = [
-  "https://todo-blush-phi.vercel.app",
-  "http://localhost:5173"
-];
-
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin like curl or postman
     if (!origin) return callback(null, true);
 
-    console.log("Checking the Origin")
-    console.log('allowedOrigins.indexOf(origin) !== -1: ', allowedOrigins.indexOf(origin) !== -1);
+    console.log('origin: ', origin);
 
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    if (origin === "https://todo-blush-phi.vercel.app") {
       callback(null, true); // Origin allowed
     } else {
       callback(new Error('Not allowed by CORS')); // Origin NOT allowed
