@@ -1,22 +1,19 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import aiRoutes from './routes/aiRoutes.js';
-import cors from 'cors'
+import cors from 'cors';
+
 dotenv.config();
 
 const app = express();
 app.use(express.json());
 
-app.use(
-  cors({
-    origin: "https://todo-blush-phi.vercel.app",
-    optionsSuccessStatus: 200,
-    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
-    preflightContinue: false
-  })
-);
-
-app.options('*', cors());
+app.use(cors({
+  // origin: "http://localhost:5173", // ✅ no slash
+  origin: "https://todo-blush-phi.vercel.app" || "http://localhost:5173", // ✅ no slash
+  methods: ["GET", "POST", "DELETE", "PUT", "PATCH", "OPTIONS"],
+  credentials: true, // Optional
+}));
 
 app.use('/api/openai', aiRoutes);
 
