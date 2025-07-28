@@ -8,9 +8,15 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use(cors({
-  origin: "https://todo-blush-phi.vercel.app",
-}))
+app.use(
+  cors({
+    origin: "https://todo-blush-phi.vercel.app",
+    optionsSuccessStatus: 200,
+    methods: ["GET", "POST", "DELETE", "UPDATE", "PUT", "PATCH"],
+    preflightContinue: false
+  })
+);
+
 app.use('/api/openai', aiRoutes);
 
 const PORT = process.env.PORT || 4000;
