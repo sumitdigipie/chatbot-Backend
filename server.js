@@ -8,7 +8,10 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
-const allowedOrigins = ['https://todo-blush-phi.vercel.app'];
+const allowedOrigins = [
+  'https://todo-blush-phi.vercel.app',
+  'https://chatbot-backend-indol-five.vercel.app'
+];
 
 app.use(cors({
   origin: function (origin, callback) {
