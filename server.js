@@ -1,21 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv';
-import aiRoutes from './routes/aiRoutes.js';
 import cors from 'cors';
 
 dotenv.config();
 
 const app = express();
+
+// Middleware
 app.use(express.json());
 
-console.log("Calling the server")
-
-const allowedOrigins = [
-  'https://todo-blush-phi.vercel.app',
-  'https://chatbot-backend-indol-five.vercel.app',
-  'http://localhost:5173'
-];
-
+// CORS configuration
 app.use(cors({
   origin: true, // Allow all origins for now
   credentials: true,
@@ -24,10 +18,10 @@ app.use(cors({
   optionsSuccessStatus: 200
 }));
 
-// Also add this to respond to OPTIONS preflight requests
+// Handle preflight requests
 app.options('*', cors());
 
-// Debug endpoint to check CORS and origins
+// Debug endpoint
 app.get('/api/debug', (req, res) => {
   res.json({
     origin: req.get('Origin'),
@@ -38,7 +32,11 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
+// Import and use AI routes after all middleware is set up
+import aiRoutes from './routes/aiRoutes.js';
 app.use('/api/openai', aiRoutes);
+
+console.log('Server setup complete');
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
