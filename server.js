@@ -8,9 +8,12 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 
+console.log("Calling the server")
+
 const allowedOrigins = [
   'https://todo-blush-phi.vercel.app',
-  'https://chatbot-backend-indol-five.vercel.app'
+  'https://chatbot-backend-indol-five.vercel.app',
+  'http://localhost:5173'
 ];
 
 app.use(cors({
@@ -18,15 +21,25 @@ app.use(cors({
     // allow requests with no origin (like Postman or curl)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) !== -1) {
+    // Log the origin for debugging
+    console.log('Request origin:', origin);
+
+    // Check if origin matches any allowed origins
+    const isAllowed = allowedOrigins.some(allowedOrigin => {
+      return origin === allowedOrigin || origin.endsWith('.vercel.app');
+    });
+
+    if (isAllowed) {
       callback(null, true);
     } else {
+      console.log('CORS blocked origin:', origin);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+  optionsSuccessStatus: 200
 }));
 
 // Also add this to respond to OPTIONS preflight requests
