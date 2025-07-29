@@ -1,16 +1,14 @@
 import express from 'express';
+import { enhanceText, generateText } from '../controllers/aiController.js';
 
 const router = express.Router();
 
-// Simple test route
 router.get('/test', (req, res) => {
   res.json({ message: 'AI routes working!' });
 });
 
-// Import controller after router creation
-import { generateText } from '../controllers/aiController.js';
-
-// POST /generate route
 router.post('/generate', generateText);
+router.post('/enhance-description', enhanceText);
 
 export default router;
+

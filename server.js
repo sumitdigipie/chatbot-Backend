@@ -1,27 +1,24 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import aiRoutes from './routes/aiRoutes.js';
 
 dotenv.config();
 
 const app = express();
 
-// Middleware
 app.use(express.json());
 
-// CORS configuration
 app.use(cors({
-  origin: true, // Allow all origins for now
+  origin: true,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
   optionsSuccessStatus: 200
 }));
 
-// Handle preflight requests
 app.options('*', cors());
 
-// Debug endpoint
 app.get('/api/debug', (req, res) => {
   res.json({
     origin: req.get('Origin'),
@@ -32,8 +29,6 @@ app.get('/api/debug', (req, res) => {
   });
 });
 
-// Import and use AI routes after all middleware is set up
-import aiRoutes from './routes/aiRoutes.js';
 app.use('/api/openai', aiRoutes);
 
 console.log('Server setup complete');
