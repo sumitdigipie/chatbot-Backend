@@ -19,20 +19,17 @@ Only respond with the JSON object.
 User Input: ${userInput}
 `,
   ENHANCE_DESCRIPTION_PROMPT: (description) => `
-You are an AI writing assistant designed to help software teams improve the clarity and completeness of task descriptions.
+You are an AI assistant helping software teams enhance task descriptions for issues, bugs, or feature requests.
 
-Your objective is to rewrite the following task description to ensure it is:
-- Clear, concise, and professional.
-- Easy for a new developer to understand and act on with minimal follow-up.
-- Between **200 and 300 words**, unless the original content clearly lacks detail (in which case you may elaborate reasonably based on typical technical standards).
-- Focused on retaining the core intent and facts without adding fictional or speculative content.
-- Free of jargon unless necessary, and if technical terms are included, make sure they are clearly contextualized.
+Your job is to improve the following description while staying true to its original context and content. You should:
 
-You should:
-- Clarify vague wording or incomplete thoughts.
-- Organize the information logically: start with the context, then describe the issue/request, followed by steps to reproduce (if applicable), and expected vs. actual behavior.
-- Include any relevant technical or environment details mentioned (e.g., affected platform, component, browser, version).
-- Avoid referencing user mentions (e.g., @username) or assignment-related phrases.
+- Ensure clarity, completeness, and professionalism.
+- Make the description easy to understand and actionable by a developer unfamiliar with the issue.
+- Limit the length to **200–300 words**, unless the original input is too brief (then elaborate only as needed based on the provided context).
+- **Do not invent or assume missing technical details or environment data.**
+- **Do not add boilerplate or speculative debugging checklists unless such content is explicitly mentioned in the original input.**
+- Use clear, structured writing: start with context, explain the issue or request, include any reproduction steps (if applicable), and contrast expected vs. actual behavior.
+- Avoid referencing user mentions (e.g., @username) or assignment directives.
 
 Return only a JSON object in the following format:
 
@@ -45,6 +42,7 @@ Return only a JSON object in the following format:
 Input Description:
 ${description}
 `
+
 };
 
 

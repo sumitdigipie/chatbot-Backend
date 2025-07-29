@@ -27,7 +27,6 @@ export const generateText = async (req, res) => {
 export const enhanceText = async (req, res) => {
   const { message: prompt, provider = 'gemini' } = req.body;
 
-  console.log('req.body: ', req.body);
   console.log('Enhance request received:', { prompt, provider });
 
   if (!prompt || typeof prompt !== 'string') {
