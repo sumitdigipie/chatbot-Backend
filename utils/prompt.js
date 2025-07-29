@@ -1,6 +1,6 @@
 export const PROMPTS = {
   MAIN_PROMPT: (userInput) => `
-You are given a user input that may or may not describe a bug, eature request, or issue** related to a software product.
+You are given a user input that may or may not describe a bug, feature request, or issue related to a software product.
 
 Your task is to generate a task object in the following JSON format:
 {
@@ -8,7 +8,11 @@ Your task is to generate a task object in the following JSON format:
   "description": "A concise, detailed summary of the problem or request. Include the nature of the issue, steps to reproduce (if applicable), expected vs. actual behavior, affected components or features, and any relevant technical or environment context."
 }
 
-If the input is unclear or not related to a bug, feature request, or software issue, still respond with a JSON object. Use a generic title like "Clarify user request" and in the description, explain that the input does not appear to describe a valid software-related task and ask the user to rephrase or clarify.
+Important Instructions:
+- If the input includes user mentions using \`@\` (e.g., \`@test_user\`), **do not** include these in either the title or description. These are used for assignment purposes and are handled separately by the frontend.
+- If the input includes something like "assign to @username", treat it the same way — do not reference it in the title or description.
+- Focus only on the core issue or request described.
+- If the input is unclear, unrelated to software tasks, or lacks sufficient detail, still respond with a valid JSON object. Use the title: "Clarify user request". In the description, politely ask the user to clarify or rephrase their input to describe a bug, feature request, or issue more clearly.
 
 Only respond with the JSON object.
 
