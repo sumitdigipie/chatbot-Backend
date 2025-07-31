@@ -2,11 +2,11 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import aiRoutes from './routes/aiRoutes.js';
+import chatRoutes from './routes/mcpRoutes.js';
 
 dotenv.config();
 
 const app = express();
-
 app.use(express.json());
 
 app.use(cors({
@@ -30,10 +30,10 @@ app.get('/api/debug', (req, res) => {
 });
 
 app.use('/api/openai', aiRoutes);
-
-console.log('Server setup complete');
+// app.use('/api/mcp', mcpRoutes);
+app.use("/api", chatRoutes);
 
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`✅ Server is running on port ${PORT}`);
 });
