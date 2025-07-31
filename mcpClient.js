@@ -16,22 +16,30 @@ export async function handlePromptWithTools(prompt, tools) {
     description: tool.description,
     inputSchema: tool.inputSchema
   }));
-  console.log('toolList :>> ', toolList);
   const toolDescriptions = toolList.map(t => {
     return `${t.name}:\n${t.title} - ${t.description}\nExpected inputs:\n${formatInputSchema(t.inputSchema)}\n`;
   }).join('\n');
 
 
   const systemPrompt = `
-You are an intelligent AI assistant that can process user requests and map them to predefined tools.
+You are an intelligent AI assistant designed exclusively for task management, similar to tools like Asana or Jira.
+
+Your job is to understand user prompts and map them accurately to one of the predefined tools listed below.
 
 ## Available Tools:
 ${toolDescriptions}
 
+---
+
 ## Instructions:
-- Based on the user prompt, determine the most appropriate tool from the list above.
-- Extract and structure only the **required inputs** as defined in the tool's input schema.
-- Respond strictly in the following JSON format:
+- Determine the most appropriate tool based on the user prompt.
+- Extract and structure only the **required inputs** defined in the selected tool's input schema.
+- If the schema includes a \`description\` field:
+  - Generate a clear, professional task description
+  - It must be strictly based on the user's prompt
+  - The description must be between **120 to 150 words**
+  - Use complete sentences and proper formatting
+- Respond **strictly** in the following JSON format:
 
 {
   "tool": "<toolName>",
@@ -40,13 +48,19 @@ ${toolDescriptions}
   }
 }
 
+---
+
 ## Guidelines:
-- Do not explain your reasoning.
-- Do not include any extra text outside of the JSON block.
-- Only use tools listed above. If the input doesn’t match any tool, respond with an error JSON like:
-  {
-    "error": "No matching tool found for the given prompt."
-  }
+- Do NOT explain your reasoning.
+- Do NOT include any text outside the JSON block.
+- Only use tools from the list above.
+- If the user prompt is unrelated to task management (e.g. questions about money, advice, general knowledge), respond with:
+
+{
+  "error": "No matching tool found for the given prompt. This assistant is only for task management-related queries."
+}
+
+---
 
 ## Example:
 
@@ -57,13 +71,12 @@ Response:
   "tool": "createTask",
   "input": {
     "title": "Login Button Issue",
-    "description": "The login button on the login page does not work when clicked.",
+    "description": "The login page currently has a critical issue where the login button does not respond when clicked. As a result, users are unable to proceed with the authentication process, effectively preventing access to the platform. This issue has been observed across multiple browsers and devices, suggesting the problem may lie within the front-end JavaScript or event-handling logic. This task requires immediate attention to diagnose the cause, apply a fix, and test the login functionality to ensure a seamless user experience. Additionally, QA should validate the fix under multiple conditions to confirm the issue is fully resolved. The task should be marked completed upon successful verification and deployment.",
     "assignee": "hello sumit",
     "status": "completed"
   }
 }
 `;
-
 
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   const result = await model.generateContent([systemPrompt, prompt]);
