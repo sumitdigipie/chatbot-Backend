@@ -30,15 +30,18 @@ export const createTaskHandler = async ({ title, description, assignee, status }
     if (!matchedUserId) {
       throw new Error(`No user found "${assignee}"`);
     }
+    const newTaskRef = db.collection("tasks").doc();
+    const taskId = newTaskRef.id;
 
     const task = {
+      taskId,
       title,
       description,
       assignedTo: matchedUserId,
       sectionId: matchedSectionId,
     };
 
-    await db.collection("tasks").add(task);
+    await newTaskRef.set(task);
 
     return {
       content: [
