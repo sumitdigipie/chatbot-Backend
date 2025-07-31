@@ -10,16 +10,17 @@ function formatInputSchema(inputSchema) {
 }
 
 export async function handlePromptWithTools(prompt, tools) {
+
   const toolList = Object.entries(tools).map(([name, tool]) => ({
     name,
     title: tool.title,
     description: tool.description,
     inputSchema: tool.inputSchema
   }));
+
   const toolDescriptions = toolList.map(t => {
     return `${t.name}:\n${t.title} - ${t.description}\nExpected inputs:\n${formatInputSchema(t.inputSchema)}\n`;
   }).join('\n');
-
 
   const systemPrompt = `
 You are an intelligent AI assistant designed exclusively for task management, similar to tools like Asana or Jira.
@@ -27,7 +28,7 @@ You are an intelligent AI assistant designed exclusively for task management, si
 Your job is to understand user prompts and map them accurately to one of the predefined tools listed below.
 
 ## Available Tools:
-\${toolDescriptions}
+${toolDescriptions}
 
 ---
 
@@ -94,11 +95,30 @@ Response:
     throw new Error("Failed to parse Gemini response: " + rawText);
   }
 
+  if (parsed.error) {
+    return {
+      input: {
+        title: "Invalid Prompt",
+        description: parsed.error || "The prompt you entered doesn't relate to any task management operation."
+      },
+      error: parsed.error
+    };
+  }
+
   const { tool, input } = parsed;
+
+  if (!tool || !tools[tool]) {
+    return {
+      input: {
+        title: "Unrecognized Task Command",
+        description: "The prompt does not correspond to any known task management tool. This assistant only supports task-related queries such as creating, updating, or assigning tasks."
+      },
+      error: "No matching tool found for the given prompt. This assistant is only for task management-related queries."
+    };
+  }
+
+
   const selectedTool = tools[tool];
-
-  if (!selectedTool) throw new Error(`Unknown tool: ${tool}`);
-
   const schema = z.object(selectedTool.inputSchema);
   const validatedInput = schema.parse(input);
 
