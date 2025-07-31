@@ -2,11 +2,21 @@ import db from "./config/firebaseAdmin.js";
 
 export const createTaskHandler = async ({ title, description, assignee, status }) => {
   try {
-    const snapshot = await db.collection("sections").get();
+    const sectionSnapshot = await db.collection("sections").get();
+    const userSnapshot = await db.collection("users").get();
+
 
     let matchedSectionId = null;
+    let matchedUserId = null
 
-    snapshot.forEach(doc => {
+    userSnapshot.forEach(doc => {
+      const data = doc.data();
+      if (`${data.firstName} ${data.lastName}`.toLowerCase() === assignee.toLowerCase()) {
+        matchedUserId = doc.id;
+      }
+    });
+
+    sectionSnapshot.forEach(doc => {
       const data = doc.data();
       if (data.status && data.status.toLowerCase() === status.toLowerCase()) {
         matchedSectionId = doc.id;
@@ -17,14 +27,16 @@ export const createTaskHandler = async ({ title, description, assignee, status }
       throw new Error(`No section found with status "${status}"`);
     }
 
+    if (!matchedUserId) {
+      throw new Error(`No user found "${assignee}"`);
+    }
+
     const task = {
       title,
       description,
-      assignedTo: "U9FIeQ7h1uXvjsFYtkzjTvxGZpi1",
+      assignedTo: matchedUserId,
       sectionId: matchedSectionId,
     };
-
-    console.log('task :>> ', task);
 
     await db.collection("tasks").add(task);
 

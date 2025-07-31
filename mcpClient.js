@@ -16,7 +16,7 @@ export async function handlePromptWithTools(prompt, tools) {
     description: tool.description,
     inputSchema: tool.inputSchema
   }));
-
+  console.log('toolList :>> ', toolList);
   const toolDescriptions = toolList.map(t => {
     return `${t.name}:\n${t.title} - ${t.description}\nExpected inputs:\n${formatInputSchema(t.inputSchema)}\n`;
   }).join('\n');
